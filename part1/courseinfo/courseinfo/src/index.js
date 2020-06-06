@@ -1,140 +1,70 @@
-import React, { userState, useState } from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 
-//-------------------------PART 1 -----------------------------
-// const Header = (props) => {
+const Button = ({onClick, text }) => (
+  <button onClick={onClick}>
+    {text}
+  </button>
+)
 
-//   return(
-//     <h1>{props.course}</h1>
-//   )
-// }
+const Label = ({text, num}) => (
+  <label>{text} {num}</label>
+)
 
-// const Content = (props) => {
+const GiveFeedback = ({ setGood, setNeutral, setBad }) => (
+  <div>
+    <h1>give feedback</h1>
+    <Button onClick={setGood} text='good'/>
+    <Button onClick={setNeutral} text='neutral'/>
+    <Button onClick={setBad} text='bad'/>
+  </div>
+)
 
-//   return(
-//     <p>
-//       {props.title} {props.excerciseCount}
-//     </p>
-//   )
-// }
-
-// const Total = (props) => {
-
-//   return(
-//     <div>
-//       <p>
-//         Number of excercises: {props.total}
-//       </p>
-//     </div>
-//   )
-// }
-
-// const App = () => {
-//   const course = 'Half Stack application development'
-//   const parts = [
-//     {
-//       name: 'Fundamentals of React',
-//       exercises: 10
-//     },
-//     {
-//       name: 'Using props to pass data',
-//       exercises: 7
-//     },
-//     {
-//       name: 'State of component',
-//       exercises: 14
-//     }
-//   ]
+const Statistics = ({ good, neutral, bad }) => {
   
-// return (
-//   <div>
-//     <Header course={course}/>
-    
-//     {parts.map(x => {
-//       return (<Content title={x.name} excerciseCount={x.exercises} />)
-//     })}
-
-//     <Total total={parts.reduce((a, b) => a+(b['exercises'] || 0), 0)}/>
-//   </div>
-//   )
-// }
-
-//-------------------------PART 2 -----------------------------
-
-// const Hello = ({name, age}) => {
-
-//   const bornYear = () => new Date().getFullYear() - age
-
-//   return(
-//     <div>
-//       <p>
-//         Hello {name}, you are {age} years old
-//       </p>
-//       <p>So you were probably born in {bornYear()}</p>
-//     </div>
-//   )
-// }
-
-// const App = () => {
-  
-//   const name = 'Peter'
-//   const age = 10
-
-//   return (
-//     <div>
-//       <h1>Greetings</h1>
-//       <Hello name="Maya" age={26+10}/>
-//       <Hello name={name} age={age}/>
-//     </div>
-//   )
-// }
-// ReactDOM.render(<App/>, document.getElementById('root'))
-
-//-------------------------PART 3 -----------------------------
-
-// const App = (props) => {
-  
-//   const [counter, setCounter] = useState(0)
-
-//   setTimeout(  
-//     () => setCounter(counter+1),
-//     1000
-//   )
-
-//   return (
-//     <div>{counter}</div>
-//   )
-// }
-
-//-------------------------PART 4 -----------------------------
-
-const Display = ({counter}) => {
-  return (
-    <div>{counter}</div>
+  let content = (
+    <label>No feedback given</label>
   )
-}
 
-const Button = ({handleClick, text}) => {
+  if(good + neutral + bad > 0)
+  {
+    let positive = 0;
+
+    if(good > 0)
+      positive = good * 100 / (neutral + bad + good)
+
+    content = (
+      <ul style={{float: 'left', listStyle: 'none'}}>
+        <li><Label text='good' num={good}/></li>
+        <li><Label text='neutral' num={neutral}/></li>
+        <li><Label text='bad' num={bad}/></li>
+        <li><Label text='all' num={good + neutral + bad}/></li>
+        <li><Label text='average' num={good + neutral + bad / 3}/></li>
+        <li><Label text='positive' num={positive}/></li>  
+      </ul>
+    )
+  }
+  
   return (
-    <button onClick={handleClick}>
-      {text}
-    </button>
+    <div>
+    <h1>statistics</h1>
+    {content}
+  </div>
   )
 }
 
 const App = (props) => {
-  
-  const [counter, setCounter] = useState(0)
-  const increaseByOne = () => setCounter(counter + 1)
-  const decreaseByOne = () => setCounter(counter - 1)
-  const setToZero = () => setCounter(0)
+
+  const [good, setGood] = useState(0)
+  const [neutral, setNeutral] = useState(0)
+  const [bad, setBad] = useState(0)
 
   return (
     <div>
-      <Display counter={counter}/>
-      <Button handleClick={increaseByOne} text="Plus"/>
-      <Button handleClick={decreaseByOne} text="Minus"/>
-      <Button handleClick={setToZero} text="Zero"/>
+      <GiveFeedback setGood={() => setGood(good+1)} 
+                    setNeutral={() => setNeutral(neutral+1)}
+                    setBad={() => setBad(bad+1)}/>
+      <Statistics good={good} neutral={neutral} bad={bad} />
     </div>
   )
 }
