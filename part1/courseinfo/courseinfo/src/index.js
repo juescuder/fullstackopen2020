@@ -1,72 +1,45 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 
-const Button = ({onClick, text }) => (
-  <button onClick={onClick}>
-    {text}
-  </button>
-)
+const anecdotes = [
+  'If it hurts, do it more often',
+  'Adding manpower to a late software project makes it later!',
+  'The first 90 percent of the code accounts for the first 90 percent of the development time...The remaining 10 percent of the code accounts for the other 90 percent of the development time.',
+  'Any fool can write code that a computer can understand. Good programmers write code that humans can understand.',
+  'Premature optimization is the root of all evil.',
+  'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.'
+]
 
-const Label = ({text, num}) => (
-  <label>{text} {num}</label>
-)
+const App = (props) => {
 
-const GiveFeedback = ({ setGood, setNeutral, setBad }) => (
-  <div>
-    <h1>give feedback</h1>
-    <Button onClick={setGood} text='good'/>
-    <Button onClick={setNeutral} text='neutral'/>
-    <Button onClick={setBad} text='bad'/>
-  </div>
-)
+  const [selected, setSelected] = useState(0)
+  const [votes, setVotes] = useState(Array.apply(null, new Array(6)).map(Number.prototype.valueOf,0));
 
-const Statistics = ({ good, neutral, bad }) => {
-  
-  let content = (
-    <label>No feedback given</label>
-  )
-
-  if(good + neutral + bad > 0)
+  function nextAnecdote ()
   {
-    let positive = 0;
+    let random = Math.floor(Math.random() * ((props.anecdotes.length - 1) + 1));
+    setSelected(random);
+  }
 
-    if(good > 0)
-      positive = good * 100 / (neutral + bad + good)
-
-    content = (
-      <ul style={{float: 'left', listStyle: 'none'}}>
-        <li><Label text='good' num={good}/></li>
-        <li><Label text='neutral' num={neutral}/></li>
-        <li><Label text='bad' num={bad}/></li>
-        <li><Label text='all' num={good + neutral + bad}/></li>
-        <li><Label text='average' num={good + neutral + bad / 3}/></li>
-        <li><Label text='positive' num={positive}/></li>  
-      </ul>
-    )
+  function addVote (slctd)
+  {
+    let copy = [...votes];
+    copy[slctd] += 1;
+    setVotes(copy);
   }
   
   return (
     <div>
-    <h1>statistics</h1>
-    {content}
-  </div>
-  )
-}
-
-const App = (props) => {
-
-  const [good, setGood] = useState(0)
-  const [neutral, setNeutral] = useState(0)
-  const [bad, setBad] = useState(0)
-
-  return (
-    <div>
-      <GiveFeedback setGood={() => setGood(good+1)} 
-                    setNeutral={() => setNeutral(neutral+1)}
-                    setBad={() => setBad(bad+1)}/>
-      <Statistics good={good} neutral={neutral} bad={bad} />
+      <div>
+        <p>{props.anecdotes[selected]}</p>
+        <p>has {votes[selected]} votes</p>
+      </div>
+      <div>
+        <button onClick={() => addVote(selected)}>vote</button>
+        <button onClick={() => nextAnecdote(selected)}>next anecdote</button>
+      </div>
     </div>
   )
 }
 
-ReactDOM.render(<App/>, document.getElementById('root'))
+ReactDOM.render(<App anecdotes={anecdotes}/>, document.getElementById('root'))
